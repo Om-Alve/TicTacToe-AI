@@ -105,21 +105,29 @@ def utility(board):
         return 0
 
 
-def minValue(board):
+def minValue(board,alpha,beta):
     v = math.inf
     if terminal(board):
         return utility(board)
     for action in actions(board):
-        v = min(v, maxValue(result(board, action)))
+        ev = maxValue(result(board, action),alpha,beta)
+        v = min(v,ev)
+        beta = min(beta,ev)
+        if beta <= alpha:
+            break
     return v
 
 
-def maxValue(board):
+def maxValue(board,alpha,beta):
     v = -math.inf
     if (terminal(board)):
         return utility(board)
     for action in actions(board):
-        v = max(v, minValue(result(board, action)))
+        ev = minValue(result(board, action),alpha,beta)
+        v = max(v, ev)
+        alpha = max(alpha,ev)
+        if alpha >= beta:
+            break
     return v
 
 
@@ -130,7 +138,7 @@ def minimax(board):
     if p == X:
         plays = {}
         for action in actions(board):
-            value = minValue(result(board, action))
+            value = minValue(result(board, action),math.inf,-math.inf)
             plays[action] = value
         best_value = max(plays.values())
         for play in plays.keys():
@@ -139,7 +147,7 @@ def minimax(board):
     else:
         plays = {}
         for action in actions(board):
-            value = maxValue(result(board, action))
+            value = maxValue(result(board, action),-math.inf,math.inf)
             plays[action] = value
         best_value = min(plays.values())
         for play in plays.keys():
